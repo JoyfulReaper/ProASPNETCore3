@@ -1,0 +1,42 @@
+﻿@using Ch3_PartyRSVP
+@model IEnumerable<GuestResponse>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Rsvp Form</title>
+</head>
+<body>
+    <h2>Here is the list of people attending the party</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>
+                    Name
+                </th>
+                <th>
+                    Email
+                </th>
+                <th>
+                    Phone
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var response in Model)
+            {
+                <tr>
+                    <td>@response.Name</td>
+                    <td>@response.Email</td>
+                    <td>@response.Phone</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

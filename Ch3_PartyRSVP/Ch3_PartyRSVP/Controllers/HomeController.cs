@@ -48,5 +48,11 @@ namespace Ch3_PartyRSVP.Controllers
 
             return View("Thanks", guestResponse);
         }
+
+        public async Task<ViewResult> ListResponses()
+        {
+            var allAttending = await _guestResponseRepository.GetAttending();
+            return View(allAttending);
+        }
     }
 }

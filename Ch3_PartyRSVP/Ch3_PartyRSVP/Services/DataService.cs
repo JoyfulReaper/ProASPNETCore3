@@ -31,7 +31,7 @@ namespace Ch3_PartyRSVP.Services
                 using (var connection = new SqliteConnection(_configuration.GetConnectionString("Default")))
                 {
                     connection.Open();
-                    connection.Execute(Resources.SQLiteDB_txt);
+                    connection.Execute(Resources.SQLiteDB);
                 }
             }
         }

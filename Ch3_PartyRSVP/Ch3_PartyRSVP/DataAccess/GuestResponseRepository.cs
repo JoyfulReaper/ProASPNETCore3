@@ -27,8 +27,8 @@ namespace Ch3_PartyRSVP.DataAccess
                 throw new ArgumentException($"{entity.Email} has already RSVPed", nameof(entity));
             }    
 
-            var queryResult = await QuerySingleAsync<int>($"INSERT INTO {TableName} (Name, Email, WillAttend) " +
-                $"VALUES (@Name, @Email, @WillAttend); select last_insert_rowid();", entity);
+            var queryResult = await QuerySingleAsync<int>($"INSERT INTO {TableName} (Name, Email, Phone, WillAttend) " +
+                $"VALUES (@Name, @Email, @Phone, @WillAttend); select last_insert_rowid();", entity);
 
             entity.Id = queryResult;
         }
@@ -40,7 +40,7 @@ namespace Ch3_PartyRSVP.DataAccess
 
         public override async Task EditAsync(GuestResponse entity)
         {
-            await ExecuteAsync($"UPDATE {TableName} SET Name = @Name, Email = @Email, WillAttend = @WillAttend " +
+            await ExecuteAsync($"UPDATE {TableName} SET Name = @Name, Email = @Email, Phone = @Phone, WillAttend = @WillAttend " +
                 $"WHERE Id = @Id", entity);
         }
 
@@ -53,6 +53,12 @@ namespace Ch3_PartyRSVP.DataAccess
             }
 
             return false;
+        }
+
+        public async Task<IEnumerable<GuestResponse>> GetAttending()
+        {
+            var queryResult = await QueryAsync<GuestResponse>($"SELECT * FROM {TableName} WHERE WillAttend = 1", null);
+            return queryResult;
         }
     }
 }

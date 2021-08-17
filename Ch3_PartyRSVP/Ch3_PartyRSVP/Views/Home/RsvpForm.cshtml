@@ -10,10 +10,12 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Rsvp Form</title>
+
+    <link rel="stylesheet" href="~/css/styles.css" />
 </head>
 <body>
     <form asp-action="RsvpForm" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="All"></div>
         <div>
             <label asp-for="Name">Your name:</label>
             <input asp-for="Name" />

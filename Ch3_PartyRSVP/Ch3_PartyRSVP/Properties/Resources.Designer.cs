@@ -71,9 +71,9 @@ namespace Ch3_PartyRSVP.Properties {
         ///);
         ///COMMIT;.
         /// </summary>
-        internal static string SQLiteDB_txt {
+        internal static string SQLiteDB {
             get {
-                return ResourceManager.GetString("SQLiteDB.txt", resourceCulture);
+                return ResourceManager.GetString("SQLiteDB", resourceCulture);
             }
         }
     }
