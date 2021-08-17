@@ -10,33 +10,36 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Rsvp Form</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 </head>
 <body>
-    <h2>Here is the list of people attending the party</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>
-                    Name
-                </th>
-                <th>
-                    Email
-                </th>
-                <th>
-                    Phone
-                </th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach(var response in Model)
-            {
+    <div class="text-center p-2">
+        <h2>Here is the list of people attending the party</h2>
+        <table class="table table-bordered table-striped table-sm">
+            <thead>
                 <tr>
-                    <td>@response.Name</td>
-                    <td>@response.Email</td>
-                    <td>@response.Phone</td>
+                    <th>
+                        Name
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Phone
+                    </th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var response in Model)
+                {
+                    <tr>
+                        <td>@response.Name</td>
+                        <td>@response.Email</td>
+                        <td>@response.Phone</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
