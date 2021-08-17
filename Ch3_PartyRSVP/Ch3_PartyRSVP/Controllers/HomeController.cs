@@ -2,6 +2,7 @@
 using Ch3_PartyRSVP.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using System;
 
 namespace Ch3_PartyRSVP.Controllers
 {
@@ -30,7 +31,15 @@ namespace Ch3_PartyRSVP.Controllers
         {
             if (ModelState.IsValid)
             {
-                await _guestResponseRepository.AddAsync(guestResponse);
+                try
+                {
+                    await _guestResponseRepository.AddAsync(guestResponse);
+                }
+                catch (ArgumentException e)
+                {
+                    ModelState.AddModelError(string.Empty, "You have already RSVPed.");
+                    return View(guestResponse);
+                }
             }
             else
             {

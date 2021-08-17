@@ -22,6 +22,11 @@ namespace Ch3_PartyRSVP.DataAccess
 
         public override async Task AddAsync(GuestResponse entity)
         {
+            if(await HasRsvped(entity.Email))
+            {
+                throw new ArgumentException($"{entity.Email} has already RSVPed", nameof(entity));
+            }    
+
             var queryResult = await QuerySingleAsync<int>($"INSERT INTO {TableName} (Name, Email, WillAttend) " +
                 $"VALUES (@Name, @Email, @WillAttend); select last_insert_rowid();", entity);
 
@@ -37,6 +42,17 @@ namespace Ch3_PartyRSVP.DataAccess
         {
             await ExecuteAsync($"UPDATE {TableName} SET Name = @Name, Email = @Email, WillAttend = @WillAttend " +
                 $"WHERE Id = @Id", entity);
+        }
+
+        public async Task<bool> HasRsvped(string email)
+        {
+            var queryResult = await QuerySingleAsync<int>($"SELECT COUNT(Email) FROM {TableName} WHERE Email = @Email", new { Email = email });
+            if (queryResult > 0)
+            {
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -13,6 +13,7 @@
 </head>
 <body>
     <form asp-action="RsvpForm" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div>
             <label asp-for="Name">Your name:</label>
             <input asp-for="Name" />
