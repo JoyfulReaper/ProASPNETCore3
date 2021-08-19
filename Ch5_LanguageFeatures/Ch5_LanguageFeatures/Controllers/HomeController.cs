@@ -141,6 +141,24 @@ namespace Ch5_LanguageFeatures.Controllers
             return View("Index", cart.Names);
         }
 
+        public async Task<ViewResult> Index4()
+        {
+            long? length = await MyAsyncMethods.GetPageLength2();
+            return View("Index", new string[] { $"Length: {length}" });
+        }
+
+        public async Task<ViewResult> AsyncIndex1()
+        {
+            List<string> output = new List<string>();
+            foreach (var len in await MyAsyncMethods.GetPageLength3(output,
+                "apress.com", "microsoft.com", "amazon.com", "kgivler.com"))
+            {
+                output.Add($"Page length: {len}");
+            }
+
+            return View("Index", output);
+        }
+
         bool FilterByPrice(Product p)
         {
             return ((p?.Price ?? 0) >= 20);
