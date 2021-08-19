@@ -159,6 +159,18 @@ namespace Ch5_LanguageFeatures.Controllers
             return View("Index", output);
         }
 
+        public async Task<ViewResult> AsyncIndex2()
+        {
+            List<string> output = new List<string>();
+            await foreach (long? len in MyAsyncMethods.GetPageLength4(output,
+                "apress.com", "microsoft.com", "amazon.com", "kgivler.com"))
+            {
+                output.Add($"Page length: {len}");
+            }
+
+            return View("Index", output);
+        }
+
         bool FilterByPrice(Product p)
         {
             return ((p?.Price ?? 0) >= 20);

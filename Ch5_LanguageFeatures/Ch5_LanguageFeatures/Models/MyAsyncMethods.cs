@@ -42,5 +42,20 @@ namespace Ch5_LanguageFeatures.Models
 
             return results;
         }
+
+        // Async Enumerable
+        public static async IAsyncEnumerable<long?>
+            GetPageLength4(List<string> output, params string[] urls)
+        {
+            HttpClient client = new HttpClient();
+
+            foreach (string url in urls)
+            {
+                output.Add($"Started request for {url}");
+                var httpMessage = await client.GetAsync($"http://{url}");
+                output.Add($"Completed request for {url}");
+                yield return httpMessage.Content.Headers.ContentLength;
+            }
+        }
     }
 }
