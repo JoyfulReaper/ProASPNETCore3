@@ -15,6 +15,38 @@ namespace SportsStore.Tests
     public class HomeControllerTests
     {
         [Fact]
+        public void Generate_Category_Specific_Product_Count()
+        {
+            // Arrange 
+            Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
+            mock.Setup(m => m.Products).Returns((new Product[]
+            {
+                new Product { ProductId = 1, Name = "P1", Category = "Cat1"},
+                new Product { ProductId = 2, Name = "P2", Category = "Cat2"},
+                new Product { ProductId = 3, Name = "P3", Category = "Cat1"},
+                new Product { ProductId = 4, Name = "P4", Category = "Cat2"},
+                new Product { ProductId = 5, Name = "P5", Category = "Cat3"}
+            }).AsQueryable<Product>());
+
+            HomeController target = new HomeController(mock.Object);
+            target.PageSize = 3;
+            Func<ViewResult, ProductsListViewModel> GetModel = result =>
+                result?.ViewData?.Model as ProductsListViewModel;
+
+            // Act
+            int? res1 = GetModel(target.Index("Cat1"))?.PagingInfo.TotalItems;
+            int? res2 = GetModel(target.Index("Cat2"))?.PagingInfo.TotalItems;
+            int? res3 = GetModel(target.Index("Cat3"))?.PagingInfo.TotalItems;
+            int? resAll = GetModel(target.Index(null))?.PagingInfo.TotalItems;
+
+            // Assert
+            Assert.Equal(2, res1);
+            Assert.Equal(2, res2);
+            Assert.Equal(1, res3);
+            Assert.Equal(5, resAll);
+        }
+
+        [Fact]
         public void Can_Use_Repository()
         {
             // arrange
@@ -32,7 +64,7 @@ namespace SportsStore.Tests
             //    (controller.Index() as ViewResult).ViewData.Model
             //        as IEnumerable<Product>;
             ProductsListViewModel result =
-                controller.Index().ViewData.Model as ProductsListViewModel;
+                controller.Index(null).ViewData.Model as ProductsListViewModel;
 
             // Assert
             Product[] prodArray = result.Products.ToArray();
@@ -63,7 +95,7 @@ namespace SportsStore.Tests
             //    (controller.Index(2) as ViewResult).ViewData.Model
             //        as IEnumerable<Product>;
             ProductsListViewModel result =
-                controller.Index(2).ViewData.Model as ProductsListViewModel;
+                controller.Index(null, 2).ViewData.Model as ProductsListViewModel;
 
             // Assert
             Product[] prodArray = result.Products.ToArray();
@@ -90,7 +122,7 @@ namespace SportsStore.Tests
 
             //Act
             ProductsListViewModel result =
-                controller.Index(2).ViewData.Model as ProductsListViewModel;
+                controller.Index(null, 2).ViewData.Model as ProductsListViewModel;
 
             // Assert
             PagingInfo pageInfo = result.PagingInfo;
