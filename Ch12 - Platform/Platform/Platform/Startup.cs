@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -22,6 +23,13 @@ namespace Platform
             {
                 options.CityName = "Albany";
             });
+
+            // Route Constraints
+            services.Configure<RouteOptions>(opts =>
+            {
+                opts.ConstraintMap.Add("countryName",
+                    typeof(CountryRouteConstraint));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -29,6 +37,100 @@ namespace Platform
             IOptions<MessageOptions> msgOptions) // Options pattern
         {
 
+            /////////////////////////////////////////////////
+            /// Routing
+            //app.UseMiddleware<Population>();
+            //app.UseMiddleware<Capital>();
+
+            app.UseRouting();
+
+            app.Use(async (context, next) =>
+            {
+                Endpoint end = context.GetEndpoint();
+                if(end != null)
+                {
+                    await context.Response
+                        .WriteAsync($"{end.DisplayName} selected \n");
+                }
+                else
+                {
+                    await context.Response
+                        .WriteAsync($"No Endpoint selected \n");
+                }
+                await next();
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                // Segment constriants
+                endpoints.MapGet("{first:int}/{second:bool}", async context =>
+                {
+                    await context.Response.WriteAsync("Constraint Request Was Routed\n");
+                    foreach (var kvp in context.Request.RouteValues)
+                    {
+                        await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+                    }
+                });
+
+                endpoints.MapGet("files/{filename}.{ext}", async context =>
+                {
+                    await context.Response.WriteAsync("Request was Routed\n");
+                    foreach(var kvp in context.Request.RouteValues)
+                    {
+                        await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+                    }
+                });
+
+                endpoints.MapGet("{first}/{second}/{thrid}", async context =>
+                {
+                    await context.Response.WriteAsync("Request Was Routed\n");
+                    foreach(var kvp in context.Request.RouteValues)
+                    {
+                        await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+                    }
+                });
+
+                // Catchall
+                endpoints.MapGet("{first}/{second}/{thrid}/{*catchall}", async context =>
+                {
+                    await context.Response.WriteAsync("Request Was Routed\n");
+                    foreach (var kvp in context.Request.RouteValues)
+                    {
+                        await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+                    }
+                });
+
+                endpoints.MapGet("routing", async context =>
+                {
+                    await context.Response.WriteAsync("Request was Routed");
+                });
+
+                //endpoints.MapGet("capital/uk", new Capital().Invoke);
+                //endpoints.MapGet("population/paris", new Population().Invoke);
+                //endpoints.MapGet("capital/{country}", Capital.Endpoint);
+
+                //endpoints.MapGet("capital/{country=france}", Capital.Endpoint);
+
+                //endpoints.MapGet("capital/{country:regex(^uk|france|monaco$)=france}", Capital.Endpoint);
+                endpoints.MapGet("capital/{country:countryName}", Capital.Endpoint);
+
+                //Optional segment
+                endpoints.MapGet("size/{city?}", Population.Endpoint)
+                    .WithMetadata(new RouteNameMetadata("population"));
+
+                //Fallback endpoint
+                endpoints.MapFallback(async context =>
+                {
+                    await context.Response.WriteAsync("Routed to fallback endpoint");
+                });
+            });
+
+            app.Use(async (context, next) =>
+            {
+                await context.Response.WriteAsync("Terminal Middleware reached");
+            });
+
+            ////////////////////////////////////////////////////
             app.UseMiddleware<LocationMiddleware>();
 
             // Options pattern
