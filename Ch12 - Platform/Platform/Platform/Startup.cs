@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
+using Platform.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,7 +37,6 @@ namespace Platform
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
             IOptions<MessageOptions> msgOptions) // Options pattern
         {
-
             /////////////////////////////////////////////////
             /// Routing
             //app.UseMiddleware<Population>();
@@ -44,24 +44,64 @@ namespace Platform
 
             app.UseRouting();
 
+            app.UseMiddleware<WeatherMiddleware>();
+            IResponseFormatter formatter = new TextResponseFormatter();
+
             app.Use(async (context, next) =>
             {
-                Endpoint end = context.GetEndpoint();
-                if(end != null)
+                if (context.Request.Path == "/middleware/function")
                 {
-                    await context.Response
-                        .WriteAsync($"{end.DisplayName} selected \n");
+                    //await formatter.Format(context,
+                    //    "Middleware function: It is snowing in Chicago");
+
+                    //Singleton
+                    //await TextResponseFormatter.Singleton.Format(context,
+                    //    "Middleware Function: It is snowing in Chicago");
+
+                    // Type Broker pattern
+                    await TypeBroker.Formatter.Format(context,
+                        "Middleware Function: It is snowing in Chicago");
                 }
                 else
                 {
-                    await context.Response
-                        .WriteAsync($"No Endpoint selected \n");
+                    await next();
                 }
-                await next();
             });
+
+            //////////////////
+            //app.Use(async (context, next) =>
+            //{
+            //    Endpoint end = context.GetEndpoint();
+            //    if(end != null)
+            //    {
+            //        await context.Response
+            //            .WriteAsync($"{end.DisplayName} selected \n");
+            //    }
+            //    else
+            //    {
+            //        await context.Response
+            //            .WriteAsync($"No Endpoint selected \n");
+            //    }
+            //    await next();
+            //});
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGet("/endpoint/class", WeatherEndpoint.Endpoint);
+                endpoints.MapGet("/endpoint/function", async context =>
+                {
+                    //await context.Response.WriteAsync("Endpoint Function: It is sunny in LA");
+
+                    // Singleton
+                    //await TextResponseFormatter.Singleton.Format(context,
+                    //    "Endpoint Function: It is sunny in LA");
+
+                    //Type Broker Pattern
+                    await TypeBroker.Formatter.Format(context,
+                        "Endpoint Function: It is sunny in LA");
+                });
+
+
                 // Segment constriants
                 endpoints.MapGet("{first:int}/{second:bool}", async context =>
                 {
