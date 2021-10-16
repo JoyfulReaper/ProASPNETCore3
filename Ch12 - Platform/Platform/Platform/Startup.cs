@@ -19,6 +19,9 @@ namespace Platform
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddSingleton<IResponseFormatter, HtmlResponseFormatter>();
+            services.AddTransient<IResponseFormatter, GuidService>();
+
             //Options pattern
             services.Configure<MessageOptions>(options =>
             {
@@ -35,7 +38,8 @@ namespace Platform
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env,
-            IOptions<MessageOptions> msgOptions) // Options pattern
+            IOptions<MessageOptions> msgOptions,
+            IResponseFormatter formatter) // Options pattern
         {
             /////////////////////////////////////////////////
             /// Routing
@@ -45,7 +49,7 @@ namespace Platform
             app.UseRouting();
 
             app.UseMiddleware<WeatherMiddleware>();
-            IResponseFormatter formatter = new TextResponseFormatter();
+            //IResponseFormatter formatter = new TextResponseFormatter();
 
             app.Use(async (context, next) =>
             {
@@ -59,8 +63,15 @@ namespace Platform
                     //    "Middleware Function: It is snowing in Chicago");
 
                     // Type Broker pattern
-                    await TypeBroker.Formatter.Format(context,
-                        "Middleware Function: It is snowing in Chicago");
+                    //await TypeBroker.Formatter.Format(context,
+                    //    "Middleware Function: It is snowing in Chicago");
+
+                    // DI
+                    //await formatter.Format(context,
+                    //    "Middleware Function: It is snowing in Chicago");
+
+                    IResponseFormatter formatter1 = app.ApplicationServices.GetService<IResponseFormatter>();
+                    await formatter1.Format(context, "Middleware Function: Its snowing in Chicago");
                 }
                 else
                 {
@@ -87,7 +98,10 @@ namespace Platform
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapGet("/endpoint/class", WeatherEndpoint.Endpoint);
+                //endpoints.MapGet("/endpoint/class", WeatherEndpoint.Endpoint);
+                //endpoints.MapWeather("/endpoints/class");
+                endpoints.MapEndpoint<WeatherEndpoint>("/endpoint/class", "Endpoint");
+
                 endpoints.MapGet("/endpoint/function", async context =>
                 {
                     //await context.Response.WriteAsync("Endpoint Function: It is sunny in LA");
@@ -97,7 +111,15 @@ namespace Platform
                     //    "Endpoint Function: It is sunny in LA");
 
                     //Type Broker Pattern
-                    await TypeBroker.Formatter.Format(context,
+                    //await TypeBroker.Formatter.Format(context,
+                    //    "Endpoint Function: It is sunny in LA");
+
+                    // DI
+                    //await formatter.Format(context,
+                    //    "Endpoint Function: It is sunny in LA");
+
+                    IResponseFormatter formatter1 = app.ApplicationServices.GetService<IResponseFormatter>();
+                    await formatter1.Format(context,
                         "Endpoint Function: It is sunny in LA");
                 });
 
