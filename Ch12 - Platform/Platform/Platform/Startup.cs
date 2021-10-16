@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -15,12 +16,34 @@ namespace Platform
 {
     public class Startup
     {
+        private IConfiguration Configuration;
+
+        public Startup(IConfiguration config)
+        {
+            Configuration = config;
+        }
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            // Service Factory Functions
+            services.AddScoped <IResponseFormatter>(serviceProvider =>
+              {
+                  string typeName = Configuration["services:IResponseFormatter"];
+                  return (IResponseFormatter)ActivatorUtilities
+                      .CreateInstance(serviceProvider, typeName == null ?
+                      typeof(GuidService) : Type.GetType(typeName, true));
+  
+              });
+
+
             //services.AddSingleton<IResponseFormatter, HtmlResponseFormatter>();
-            services.AddTransient<IResponseFormatter, GuidService>();
+            //services.AddTransient<IResponseFormatter, GuidService>();
+            //services.AddScoped<IResponseFormatter, GuidService>();
+
+            //services.AddScoped<IResponseFormatter, TimeResponseFormatter>();
+            services.AddScoped<ITimeStamper, DefaultTimeStamper>();
 
             //Options pattern
             services.Configure<MessageOptions>(options =>
@@ -70,8 +93,13 @@ namespace Platform
                     //await formatter.Format(context,
                     //    "Middleware Function: It is snowing in Chicago");
 
-                    IResponseFormatter formatter1 = app.ApplicationServices.GetService<IResponseFormatter>();
-                    await formatter1.Format(context, "Middleware Function: Its snowing in Chicago");
+                    //IResponseFormatter formatter1 = app.ApplicationServices.GetService<IResponseFormatter>();
+                    //await formatter1.Format(context, "Middleware Function: Its snowing in Chicago");
+
+                    IResponseFormatter formatter1
+                        = context.RequestServices.GetService<IResponseFormatter>();
+                    await formatter1.Format(context,
+                        "Middleware Function: It's snowing in Chicago");
                 }
                 else
                 {
@@ -118,7 +146,12 @@ namespace Platform
                     //await formatter.Format(context,
                     //    "Endpoint Function: It is sunny in LA");
 
-                    IResponseFormatter formatter1 = app.ApplicationServices.GetService<IResponseFormatter>();
+                    //IResponseFormatter formatter1 = app.ApplicationServices.GetService<IResponseFormatter>();
+                    //await formatter1.Format(context,
+                    //    "Endpoint Function: It is sunny in LA");
+
+                    IResponseFormatter formatter1 =
+                        context.RequestServices.GetService<IResponseFormatter>();
                     await formatter1.Format(context,
                         "Endpoint Function: It is sunny in LA");
                 });
