@@ -33,10 +33,33 @@ namespace Platform3
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
 
-            app.UseDeveloperExceptionPage();
+            //app.UseDeveloperExceptionPage();
+            //app.UseExceptionHandler("/error.html");
+            app.UseStatusCodePages("text/html", Responses.DefaultResponse);
+            
+            app.UseHttpsRedirection();
             app.UseCookiePolicy();
+            app.UseStaticFiles();
             app.UseMiddleware<ConsentMiddleware>();
             app.UseSession();
+
+            app.Use(async (context, next) =>
+            {
+                if(context.Request.Path == "/error")
+                {
+                    context.Response.StatusCode = StatusCodes.Status404NotFound;
+                    await Task.CompletedTask;
+                } else
+                {
+                    await next();
+                }
+            });
+
+            app.Run(context =>
+            {
+                throw new Exception("Something has gone wrong :'(");
+            });
+
             app.UseRouting();
 
             app.UseEndpoints(endpoints =>
