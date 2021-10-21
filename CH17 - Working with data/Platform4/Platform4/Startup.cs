@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Platform4.Models;
 using Platform4.Services;
 using System;
 using System.Collections.Generic;
@@ -34,6 +36,13 @@ namespace Platform4
 
             services.AddResponseCaching();
             services.AddSingleton<IResponseFormatter, HtmlResponseFormatter>();
+            services.AddTransient<SeedData>();
+
+            services.AddDbContext<CalculationContext>(opts =>
+            {
+                opts.UseSqlServer(_configuration["ConnectionStrings:CalcConnection"]);
+                opts.EnableSensitiveDataLogging(true);
+            });
 
             //services.AddDistributedMemoryCache(opts =>
             //{
@@ -42,7 +51,8 @@ namespace Platform4
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostApplicationLifetime lifetime,
+            IWebHostEnvironment env, SeedData seeData)
         {
 
             app.UseDeveloperExceptionPage();
@@ -52,14 +62,24 @@ namespace Platform4
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapEndpoint<SumEndpoint>("/sum/{count:int=1000000000}");
-                endpoints.MapEndpoint<SumEndpoint>("/sumc/{count:int=1000000000}", "EndpointResponseCache");
+                endpoints.MapEndpoint<SumEndpoint>("/sum/{count:int=1000000000}");
+                //endpoints.MapEndpoint<SumEndpoint>("/sumc/{count:int=1000000000}", "EndpointResponseCache");
 
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Hello World!");
                 });
             });
+
+            bool cmdLineInit = (_configuration["INITDB" ?? "false"]) == "true";
+            if(env.IsDevelopment() || cmdLineInit)
+            {
+                seeData.SeedDatabase();
+                if (cmdLineInit)
+                {
+                    lifetime.StopApplication();
+                }
+            }
         }
     }
 }
