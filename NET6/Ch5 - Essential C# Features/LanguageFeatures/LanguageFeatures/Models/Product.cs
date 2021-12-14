@@ -9,6 +9,9 @@
         //public bool InStock { get; } = true; // Read only auto-implemented property
         public bool InStock { get; } // Can be assigned a value in the constructor!
 
+        // Lambda Expression for a property
+        public bool NameBeginsWithS => Name?[0] == 'S';
+
         public Product(bool stock = true)
         {
             InStock = stock;

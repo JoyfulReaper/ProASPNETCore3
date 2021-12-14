@@ -21,4 +21,16 @@ namespace LanguageFeatures.Models
             return GetEnumerator();
         }
     }
+
+    public class ShoppingCart3 : IProductSelection
+    {
+        private List<Product> _products = new List<Product>();
+
+        public ShoppingCart3(params Product[] products)
+        {
+            _products.AddRange(products);
+        }
+
+        public IEnumerable<Product> Products { get => _products; }
+    }
 }
