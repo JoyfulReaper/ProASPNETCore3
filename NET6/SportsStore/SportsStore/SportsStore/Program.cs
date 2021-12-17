@@ -19,6 +19,9 @@ app.UseStaticFiles(); // Server static content from wwwroot
 app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
+    endpoints.MapControllerRoute("pagination",
+        "Products/Page{productpage}",
+                new { Controller = "Home", action = "Index" });
     endpoints.MapDefaultControllerRoute();
 });
 

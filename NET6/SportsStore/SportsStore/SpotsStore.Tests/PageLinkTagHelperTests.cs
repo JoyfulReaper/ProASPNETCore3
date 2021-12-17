@@ -20,26 +20,26 @@ namespace SpotsStore.Tests
         {
             // Arrange
             var urlHelper = new Mock<IUrlHelper>();
-            urlHelper.SetupSequence(x => x.Action(It.IsAny<UrlActionContext>()))
+            urlHelper.SetupSequence(x =>
+           x.Action(It.IsAny<UrlActionContext>()))
                 .Returns("Test/Page1")
                 .Returns("Test/Page2")
                 .Returns("Test/Page3");
             var urlHelperFactory = new Mock<IUrlHelperFactory>();
-            urlHelperFactory.Setup(f => 
+            urlHelperFactory.Setup(f =>
                 f.GetUrlHelper(It.IsAny<ActionContext>()))
                     .Returns(urlHelper.Object);
 
-            PageLinkTagHelper helper =
-                new PageLinkTagHelper(urlHelperFactory.Object)
+            PageLinkTagHelper helper = new PageLinkTagHelper(urlHelperFactory.Object)
+            {
+                PageModel = new PagingInfo
                 {
-                    PageModel = new PagingInfo
-                    {
-                        CurrentPage = 2,
-                        TotalItems = 28,
-                        ItemsPerPage = 10
-                    },
-                    PageAction = "Test"
-                };
+                    CurrentPage = 2,
+                    TotalItems = 28,
+                    ItemsPerPage = 10
+                },
+                PageAction = "Test"
+            };
 
             TagHelperContext ctx = new TagHelperContext(
                 new TagHelperAttributeList(),
@@ -50,7 +50,7 @@ namespace SpotsStore.Tests
                 new TagHelperAttributeList(),
                 (cache, encoder) => Task.FromResult(content.Object));
 
-            //Act
+            // Act
             helper.Process(ctx, output);
 
             // Assert
