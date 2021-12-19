@@ -9,20 +9,35 @@ builder.Services.AddDbContext<StoreDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration["ConnectionStrings:SportsStoreConnection"]);
 });
 builder.Services.AddScoped<IStoreRepository, EFStoreRepository>();
+builder.Services.AddRazorPages();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
 
 var app = builder.Build();
 
 app.UseDeveloperExceptionPage(); // Show detailed exception information
 app.UseStatusCodePages(); // Simple messages to HTTP responses that normally would not have a body
 app.UseStaticFiles(); // Server static content from wwwroot
+app.UseSession();
 
 app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
+    endpoints.MapControllerRoute("catpage",
+        "{category}/Page{productPage:int}",
+        new { Controller = "Home", action = "Index" });
+
+    endpoints.MapControllerRoute("page", "Page{productPage:int}",
+        new { Controller = "Home", action = "Index", productPage = 1 });
+
+    endpoints.MapControllerRoute("category", "{category}",
+        new { Controller = "Home", action = "Index", productPage = 1 });
+
     endpoints.MapControllerRoute("pagination",
-        "Products/Page{productpage}",
-                new { Controller = "Home", action = "Index" });
+        "Products/Page{productPage}",
+        new { Controller = "Home", action = "Index", productPage = 1 });
     endpoints.MapDefaultControllerRoute();
+    endpoints.MapRazorPages();
 });
 
 SeedData.EnsurePopulated(app);
