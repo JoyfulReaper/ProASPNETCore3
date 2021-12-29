@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SportsStore.Models;
 
@@ -17,14 +18,35 @@ builder.Services.AddScoped<Cart>(sp => SessionCart.GetCart(sp));
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddServerSideBlazor();
 
+// Setup Identity using Entity Framework Core
+builder.Services.AddDbContext<AppIdentityDbContext>(options =>
+    options.UseSqlServer(builder.Configuration["ConnectionStrings:IdentityConnection"]));
+
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<AppIdentityDbContext>();
+
 var app = builder.Build();
 
-app.UseDeveloperExceptionPage(); // Show detailed exception information
-app.UseStatusCodePages(); // Simple messages to HTTP responses that normally would not have a body
+//app.UseStatusCodePages(); // Simple messages to HTTP responses that normally would not have a body
 app.UseStaticFiles(); // Server static content from wwwroot
+
+if (app.Environment.IsProduction())
+{
+    app.UseExceptionHandler("/error");
+}
+else
+{
+    app.UseDeveloperExceptionPage();
+    app.UseStatusCodePages();
+}
+
 app.UseSession();
 
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllerRoute("catpage",
@@ -47,5 +69,6 @@ app.UseEndpoints(endpoints =>
 });
 
 SeedData.EnsurePopulated(app);
+IdentitySeedData.EnsurePopulated(app);
 
 app.Run();
