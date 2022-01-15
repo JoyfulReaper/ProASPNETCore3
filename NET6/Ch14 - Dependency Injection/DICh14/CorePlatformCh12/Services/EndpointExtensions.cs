@@ -21,15 +21,30 @@ namespace DICh14.Services
                 throw new Exception("Method cannot be used");
             }
 
-            T endpointInstance =
-                ActivatorUtilities.CreateInstance<T>(app.ServiceProvider);
 
             ParameterInfo[] methodParams = methodInfo.GetParameters();
+            app.MapGet(path, context =>
+            {
+                T endpointInstance = 
+                    ActivatorUtilities.CreateInstance<T>(context.RequestServices);
 
-            app.MapGet(path, context => (Task)methodInfo.Invoke(endpointInstance,
-                methodParams.Select(p => p.ParameterType == typeof(HttpContext)
-                ? context
-                : app.ServiceProvider.GetService(p.ParameterType)).ToArray()));
+                return (Task)methodInfo.Invoke(endpointInstance, methodParams.Select(p =>
+                    p.ParameterType == typeof(HttpContext) ? context :
+                    context.RequestServices.GetService(p.ParameterType)).ToArray());
+            });
+
+
+
+            //T endpointInstance =
+            //    ActivatorUtilities.CreateInstance<T>(app.ServiceProvider);
+
+            //ParameterInfo[] methodParams = methodInfo.GetParameters();
+
+            //app.MapGet(path, context => (Task)methodInfo.Invoke(endpointInstance,
+            //    methodParams.Select(p => p.ParameterType == typeof(HttpContext)
+            //    ? context
+            //    : context.RequestServices.GetService(p.ParameterType)).ToArray()));
+            //: app.ServiceProvider.GetService(p.ParameterType)).ToArray()));
 
             //app.MapGet(path, (RequestDelegate)methodInfo
             //    .CreateDelegate(typeof(RequestDelegate), endpointInstance));
