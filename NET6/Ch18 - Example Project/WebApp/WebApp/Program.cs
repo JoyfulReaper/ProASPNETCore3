@@ -10,6 +10,8 @@ builder.Services.AddDbContext<DataContext>(opts =>
     opts.EnableSensitiveDataLogging(true);
 });
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
 
 app.UseDeveloperExceptionPage();
@@ -22,6 +24,8 @@ app.UseEndpoints(endpoints =>
     {
         await context.Response.WriteAsync("Hello World");
     });
+    //endpoints.MapWebService();
+    endpoints.MapControllers();
 });
 
 SeedData.SeedDatabase(app.Services
