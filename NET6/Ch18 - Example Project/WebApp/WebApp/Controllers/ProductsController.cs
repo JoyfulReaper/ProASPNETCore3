@@ -3,6 +3,7 @@ using WebApp.Models;
 
 namespace WebApp.Controllers
 {
+    [ApiController] // No longer need to use [FromBody] Attrib or Check modelstate is valid
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
@@ -14,18 +15,18 @@ namespace WebApp.Controllers
         }
 
         [HttpGet]
-        public IEnumerable<Product> GetProducts()
+        public IAsyncEnumerable<Product> GetProducts()
         {
             //return new Product[]
             //{
             //    new Product() { Name = "Product #1"},
             //    new Product() { Name = "Product #2"},
             //};
-            return _context.Products;
+            return _context.Products.AsAsyncEnumerable();
         }
 
         [HttpGet("{id}")]
-        public Product GetProduct(long id,
+        public async Task<IActionResult> GetProduct(long id,
             [FromServices] ILogger<ProductsController> logger)
         {
             //return new Product
@@ -34,28 +35,59 @@ namespace WebApp.Controllers
             //    Name = "Test Product"
             //};
             logger.LogDebug($"GetProduct Action Invoked: {id}");
-            return _context.Products.Find(id);
+
+            Product p = await _context.Products.FindAsync(id);
+            if(p == null)
+            {
+                return NotFound();
+            }
+
+            //return Ok(p);
+            return Ok(new
+            {
+                ProductId = p.ProductId,
+                Name = p.Name,
+                Price = p.Price,
+                CategoryId = p.CategoryId,
+                SupplierId = p.SupplierId,
+            });
         }
 
         [HttpPost]
-        public void SaveProduct([FromBody]Product product)
+        //public async Task<IActionResult> SaveProduct([FromBody]ProductBindingTarget target)
+        public async Task<IActionResult> SaveProduct(ProductBindingTarget target)
         {
-            _context.Products.Add(product);
-            _context.SaveChanges();
+            //if (ModelState.IsValid)
+            //{
+                Product p = target.ToProduct();
+                await _context.Products.AddAsync(p);
+                await _context.SaveChangesAsync();
+                return Ok(p);
+            //}
+            //return BadRequest(ModelState);
         }
 
         [HttpPut]
-        public void UpdateProduct([FromBody] Product product)
+        //public async Task UpdateProduct([FromBody] Product product)
+        public async Task UpdateProduct(Product product)
         {
-            _context.Products.Update(product);
-            _context.SaveChanges();
+            _context.Update(product);
+            await _context.SaveChangesAsync();
         }
 
         [HttpDelete("{id}")]
-        public void DeleteProduct(long id)
+        public async Task DeleteProduct(long id)
         {
             _context.Products.Remove(new Product { ProductId = id });
-            _context.SaveChanges();
+            _context.SaveChangesAsync();
+        }
+
+        [HttpGet("redirect")]
+        public IActionResult Redirect()
+        {
+            //return Redirect("/api/products/1");
+            //return RedirectToAction(nameof(GetProduct), new { Id = 1 });
+            return RedirectToRoute(new { controller = "Products", action = "GetProduct", Id = 1 });
         }
     }
 }
