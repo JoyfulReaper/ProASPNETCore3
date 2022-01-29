@@ -26,6 +26,8 @@ namespace WebApp.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)] // Fot Swagger/OpenAPI
         public async Task<IActionResult> GetProduct(long id,
             [FromServices] ILogger<ProductsController> logger)
         {

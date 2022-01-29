@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using WebApp;
 using WebApp.Models;
@@ -12,26 +13,59 @@ builder.Services.AddDbContext<DataContext>(opts =>
     opts.EnableSensitiveDataLogging(true);
 });
 
-builder.Services.AddControllers();
-builder.Services.Configure<JsonOptions>(opts =>
+//builder.Services.AddControllers();
+//.AddNewtonsoftJson()
+//.AddXmlSerializerFormatters();
+
+builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation();
+
+//builder.Services.Configure<MvcNewtonsoftJsonOptions>(opts =>
+//{
+//    opts.SerializerSettings.NullValueHandling
+//        = Newtonsoft.Json.NullValueHandling.Ignore;
+//});
+
+//builder.Services.Configure<MvcOptions>(opts =>
+//{
+//    opts.RespectBrowserAcceptHeader = true; // Disable JSON fall back when header contains */*
+//    opts.ReturnHttpNotAcceptable = true; // Disable JSON fall back when unsupported content is requested
+//});
+
+builder.Services.AddSwaggerGen(options =>
 {
-    opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+    options.SwaggerDoc("v1",
+        new OpenApiInfo { Title = "WebApp", Version = "v1" });
 });
+
+//builder.Services.Configure<JsonOptions>(opts =>
+//{
+//    opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+//});
 
 var app = builder.Build();
 
 app.UseDeveloperExceptionPage();
+app.UseStaticFiles();
 app.UseRouting();
 app.UseMiddleware<TestMiddleware>();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapGet("/", async context =>
-    {
-        await context.Response.WriteAsync("Hello World");
-    });
+    //endpoints.MapGet("/", async context =>
+    //{
+    //    await context.Response.WriteAsync("Hello World");
+    //});
     //endpoints.MapWebService();
     endpoints.MapControllers();
+    endpoints.MapControllerRoute("Default",
+        "{controller=Home}/{action=Index}/{id?}");
+});
+
+app.UseSwagger();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApp");
 });
 
 SeedData.SeedDatabase(app.Services
