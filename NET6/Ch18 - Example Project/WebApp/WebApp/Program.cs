@@ -20,6 +20,12 @@ builder.Services.AddDbContext<DataContext>(opts =>
 builder.Services.AddControllersWithViews()
     .AddRazorRuntimeCompilation();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.IsEssential = true;
+});
+
 //builder.Services.Configure<MvcNewtonsoftJsonOptions>(opts =>
 //{
 //    opts.SerializerSettings.NullValueHandling
@@ -47,6 +53,7 @@ var app = builder.Build();
 
 app.UseDeveloperExceptionPage();
 app.UseStaticFiles();
+app.UseSession();
 app.UseRouting();
 app.UseMiddleware<TestMiddleware>();
 

@@ -1,6 +1,68 @@
 ﻿@model WebApp.Models.Product
+@{
+	Layout = "_Layout";
+	//Layout = "_ImportantLayout";
+	ViewBag.Title = "Product Table";
+}
 
-<!DOCTYPE html>
+@section Header {
+	Product Information
+}
+
+<tr>
+	<th>Name</th>
+	<td>@Model.Name</td>
+</tr>
+<tr>
+	<th>Price</th>
+	<td>
+		@Model.Price.ToString("c")
+	</td>
+</tr>
+<tr>
+	<th>CategoryId</th>
+	<td>@Model.CategoryId</td>
+</tr>
+
+@section Footer {
+	@(((Model.Price / ViewBag.AveragePrice) 
+		* 100).ToString("F2"))% of average price
+}
+
+@section Summary {
+	<div class="bg-info text-white m-2 p-2">
+		@Json.Serialize(Model)
+	</div>
+}
+
+@*<div class="m-2">
+	<table class="table table-sm table-striped table-bordered">
+		<tbody>
+			<tr>
+				<th>Name</th>
+				<td>@Model.Name</td>
+			</tr>
+			<tr>
+				<th>Price</th>
+				<td>
+					@Model.Price.ToString("c")
+					(@(((Model.Price / ViewBag.AveragePrice) 
+						* 100).ToString("F2"))% of average price)
+				</td>
+			</tr>
+			<tr>
+				<th>CategoryId</th>
+				<td>@Model.CategoryId</td>
+			</tr>
+			<tr>
+				<th>SupplierId</th>
+				<td>@Model.SupplierId</td>
+			</tr>
+		</tbody>
+	</table>
+</div>*@
+
+@*<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -19,7 +81,11 @@
 				</tr>
 				<tr>
 					<th>Price</th>
-					<td>@Model.Price.ToString("c")</td>
+					<td>
+						@Model.Price.ToString("c")
+						(@(((Model.Price / ViewBag.AveragePrice) 
+							* 100).ToString("F2"))% of average price)
+					</td>
 				</tr>
 				<tr>
 					<th>CategoryId</th>
@@ -33,4 +99,4 @@
 		</table>
 	</div>
 </body>
-</html>
+</html>*@

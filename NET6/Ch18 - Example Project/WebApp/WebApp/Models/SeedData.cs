@@ -41,7 +41,7 @@ namespace WebApp.Models
                         Supplier = s1
                     }, new Product
                     {
-                        Name = "LifeJacket",
+                        Name = "Lifejacket",
                         Price = 48.95m,
                         Category = c1,
                         Supplier = s1
