@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
@@ -18,6 +19,9 @@ builder.Services.AddDbContext<DataContext>(opts =>
 //.AddXmlSerializerFormatters();
 
 builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation();
+
+builder.Services.AddRazorPages()
     .AddRazorRuntimeCompilation();
 
 builder.Services.AddDistributedMemoryCache();
@@ -49,6 +53,11 @@ builder.Services.AddSwaggerGen(options =>
 //    opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 //});
 
+builder.Services.Configure<RazorPagesOptions>(opts =>
+{
+    opts.Conventions.AddPageRoute("/Index", "/extra/page/{id:long?}");
+});
+
 var app = builder.Build();
 
 app.UseDeveloperExceptionPage();
@@ -65,8 +74,10 @@ app.UseEndpoints(endpoints =>
     //});
     //endpoints.MapWebService();
     endpoints.MapControllers();
-    endpoints.MapControllerRoute("Default",
-        "{controller=Home}/{action=Index}/{id?}");
+    //endpoints.MapControllerRoute("Default",
+    //    "{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapDefaultControllerRoute();
+    endpoints.MapRazorPages();
 });
 
 app.UseSwagger();
