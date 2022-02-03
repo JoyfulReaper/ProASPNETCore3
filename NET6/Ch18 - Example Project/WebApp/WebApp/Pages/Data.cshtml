@@ -1,0 +1,34 @@
+﻿@*Using a Razor Page without a page model for data access*@
+
+@page
+@*@model DataPageModel
+@using Microsoft.AspNetCore.Mvc.RazorPages*@
+@inject DataContext _context
+
+<h5 class="bg-primary text-white text-center m-2 p-2">Categories</h5>
+<ul class="list-group m-2">
+	@*@foreach(Category c in Model.Categories)*@
+	@foreach(Category c in _context.Categories)
+	{
+		<li class="list-group-item">@c.Name</li>
+	}
+</ul>
+
+@*@functions {
+	public class DataPageModel : PageModel
+	{
+		private DataContext _context;
+
+		public IEnumerable<Category> Categories { get; set; }
+
+		public DataPageModel(DataContext context)
+		{
+			_context = context;
+		}
+
+		public void OnGet()
+		{
+			Categories = _context.Categories;
+		}
+	}
+}*@
