@@ -2,7 +2,7 @@
 @{
 	Layout = "_Layout";
 	//Layout = "_ImportantLayout";
-	ViewBag.Title = "Product Table";
+	ViewBag.Title = ViewBag.Title ?? "Product Table";
 }
 
 @section Header {
@@ -30,9 +30,12 @@
 }
 
 @section Summary {
-	<div class="bg-info text-white m-2 p-2">
+@*	<div class="bg-info text-white m-2 p-2">
 		@Json.Serialize(Model)
-	</div>
+	</div>*@
+
+	@*@await Component.InvokeAsync("CitySummary")*@
+	<vc:city-summary />
 }
 
 @*<div class="m-2">

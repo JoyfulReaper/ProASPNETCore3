@@ -53,6 +53,8 @@ builder.Services.AddSwaggerGen(options =>
 //    opts.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 //});
 
+builder.Services.AddSingleton<CitiesData>();
+
 builder.Services.Configure<RazorPagesOptions>(opts =>
 {
     opts.Conventions.AddPageRoute("/Index", "/extra/page/{id:long?}");
