@@ -1,11 +1,33 @@
 ﻿@model WebApp.Models.Product
 @{
-	Layout = "_Layout";
+	//Layout = "_Layout";
 	//Layout = "_ImportantLayout";
-	ViewBag.Title = ViewBag.Title ?? "Product Table";
+	//ViewBag.Title = ViewBag.Title ?? "Product Table";
+	Layout = "_SimpleLayout";
 }
 
-@section Header {
+
+<div class="m-2" wrap="true">Inner Content</div>
+
+<table class="table table-striped table-bordered table-sm">
+@*	<thead>
+		<tr bg-color="info" text-color="white">
+			<th colspan="2">Product Summary</th>
+		</tr>
+	</thead>*@
+	<tablehead bg-color="dark">Product Summary</tablehead>
+	<tbody>
+		<tr><th>Name</th><td>@Model.Name</td></tr>
+		<tr>
+			<th>Price</th>
+			<td>@Model.Price.ToString("c")</td>
+		</tr>
+		<tr><th>Category Id</th><td>@Model.CategoryId</td></tr>
+	</tbody>
+</table>
+
+
+@*@section Header {
 	Product Information
 }
 
@@ -27,20 +49,21 @@
 @section Footer {
 	@(((Model.Price / ViewBag.AveragePrice) 
 		* 100).ToString("F2"))% of average price
-}
+}*@
 
-@section Summary {
+
+@*@section Summary {*@
 @*	<div class="bg-info text-white m-2 p-2">
 		@Json.Serialize(Model)
 	</div>*@
 
 	@*@await Component.InvokeAsync("CitySummary")*@
 
-	<div class="bg-info text-white m-2 p-2">
+@*	<div class="bg-info text-white m-2 p-2">
 		<vc:city-summary theme-name="secondary" />
 		<vc:page-size />
 	</div>
-}
+}*@
 
 @*<div class="m-2">
 	<table class="table table-sm table-striped table-bordered">
