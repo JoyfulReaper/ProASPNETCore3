@@ -32,8 +32,8 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddTransient<ITagHelperComponent, TimeTagHelperComponent>();
-builder.Services.AddTransient<ITagHelperComponent, TableFooterTagHelperComponent>();
+//builder.Services.AddTransient<ITagHelperComponent, TimeTagHelperComponent>();
+//builder.Services.AddTransient<ITagHelperComponent, TableFooterTagHelperComponent>();
 
 //builder.Services.Configure<MvcNewtonsoftJsonOptions>(opts =>
 //{

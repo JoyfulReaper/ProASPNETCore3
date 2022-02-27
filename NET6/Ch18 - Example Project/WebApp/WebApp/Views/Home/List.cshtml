@@ -1,10 +1,33 @@
 ﻿@model IEnumerable<Product>
 @{
-	decimal average = Model.Average(p => p.Price);
-	Layout = null;
+	//decimal average = Model.Average(p => p.Price);
+	//Layout = null;
+	Layout = "_SimpleLayout";
 }
 
-<!DOCTYPE html>
+<h6 class="bg-secondary text-white text-center m-2 p-2">Products</h6>
+<div class="m-2">
+	<table class="table table-sm table-striped table-bordered">
+		<thead>
+			<tr>
+				<th>Name</th>
+				<th>Price</th>
+				<th>Category</th>
+				<th>Supplier</th>
+				<th></th>
+			</tr>
+		</thead>
+		<tbody>
+			@foreach(Product p in Model)
+			{
+				<partial name="_RowPartial" model="p" />
+			}
+		</tbody>
+	</table>
+	<a asp-page="/suppliers/list" class="btn btn-secondary">Suppliers</a>
+</div>
+
+@*<!DOCTYPE html>
 <html lang="en">
 <head>
 	<meta charset="utf-8">
@@ -23,13 +46,13 @@
 				@foreach (Product p in Model)
 				{
 					<partial name="_RowPartial" model="p" />
-@*					<tr>
+					<tr>
 						<td>@p.Name</td><td>@p.Price</td>
 						<td>@((p.Price / average * 100).ToString("F1")) % of average</td>
-					</tr>*@
+					</tr>
 				}
 			</tbody>
 		</table>
 	</div>
 </body>
-</html>
+</html>*@

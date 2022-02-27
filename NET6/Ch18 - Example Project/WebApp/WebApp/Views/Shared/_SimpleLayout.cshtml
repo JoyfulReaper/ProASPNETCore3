@@ -4,10 +4,41 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
-    <link href="~/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    @*<link href="~/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />*@
+    @*<link asp-href-include="/lib/twitter-bootstrap/css/*.min.css" 
+        asp-href-exclude="**/*-reboot*,**/*-grid*" rel="stylesheet"/>*@
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"
+        asp-fallback-href="/lib/twitter-bootstrap/css/bootstrap.min.css"
+        asp-fallback-test-class="btn"
+        asp-fallback-test-property="display"
+        asp-fallback-test-value="inline-block"
+        rel="stylesheet" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        asp-fallback-src="/lib/jquery/jquery.min.js"
+        asp-fallback-test="window.jQuery" asp-append-version="true">
+    </script>
 </head>
 <body>
     <div class="m-2">
+        <img src="/images/city.png" asp-append-version="true" class="m-2"  />
+
+        <environment names="development">
+            <h2 class="bg-info text-white m-2 p-2">This is Development</h2>
+        </environment>
+
+        <environment names="production">
+            <h2 class="bg-danger text-white m-2 p-2">This is Production</h2>
+        </environment>
+
+        <h6 class="bg-primary text-white m-2 p-2">
+            Uncached timestamp: @DateTime.Now.ToLongTimeString()
+        </h6>
+        <cache expires-after=@TimeSpan.FromSeconds(10) vary-by-route="action">
+             <h6 class="bg-primary text-white m-2 p-2">
+                Cached timestamp: @DateTime.Now.ToLongTimeString()
+            </h6>
+        </cache>
         @RenderBody()
     </div>
 </body>
