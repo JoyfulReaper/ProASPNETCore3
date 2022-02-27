@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using WebApp;
 using WebApp.Models;
+using WebApp.TagHelpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,9 @@ builder.Services.AddSession(options =>
 {
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddTransient<ITagHelperComponent, TimeTagHelperComponent>();
+builder.Services.AddTransient<ITagHelperComponent, TableFooterTagHelperComponent>();
 
 //builder.Services.Configure<MvcNewtonsoftJsonOptions>(opts =>
 //{
