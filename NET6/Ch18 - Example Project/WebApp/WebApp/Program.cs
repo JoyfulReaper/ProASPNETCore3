@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Razor.TagHelpers;
@@ -65,6 +66,11 @@ builder.Services.Configure<RazorPagesOptions>(opts =>
     opts.Conventions.AddPageRoute("/Index", "/extra/page/{id:long?}");
 });
 
+builder.Services.Configure<AntiforgeryOptions>(opts =>
+{
+    opts.HeaderName = "X-XSRF-TOKEN";
+});
+
 var app = builder.Build();
 
 app.UseDeveloperExceptionPage();
@@ -81,6 +87,8 @@ app.UseEndpoints(endpoints =>
     //});
     //endpoints.MapWebService();
     endpoints.MapControllers();
+    endpoints.MapControllerRoute("forms",
+        "controllers/{controller=Home}/{action=Index}/{id?}");
     //endpoints.MapControllerRoute("Default",
     //    "{controller=Home}/{action=Index}/{id?}");
     endpoints.MapDefaultControllerRoute();
@@ -91,6 +99,21 @@ app.UseSwagger();
 app.UseSwaggerUI(options =>
 {
     options.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApp");
+});
+
+var antiforgery = app.Services.CreateScope()
+    .ServiceProvider
+    .GetRequiredService<IAntiforgery>();
+
+app.Use(async (context, next) =>
+{
+    if(!context.Request.Path.StartsWithSegments("/api"))
+    {
+        context.Response.Cookies.Append("XSRF-TOKEN",
+            antiforgery.GetAndStoreTokens(context).RequestToken,
+            new CookieOptions { HttpOnly = false });
+    }
+    await next();
 });
 
 SeedData.SeedDatabase(app.Services
