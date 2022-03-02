@@ -1,0 +1,51 @@
+﻿@page "/pages/bform/{id:long?}"
+@model FormHandlerModel
+@using Microsoft.AspNetCore.Mvc.RazorPages
+@using Microsoft.EntityFrameworkCore
+
+<div class="m-2">
+	<h5 class="bg-primary text-white text-center p-2 m-2">HTML Form</h5>
+
+	<form asp-page="BindingFormHandler" method="post" id="htmlform">
+	<div class="form-group">
+		<label>Name</label>
+		<input class="form-control" asp-for="Product.Name"/>
+	</div>
+		<div class="form-group">
+		<label>Price</label>
+		<input class="form-control" asp-for="Product.Price"/>
+	</div>
+		<button type="submit" class="btn btn-primary">Submit</button>
+	</form>
+</div>
+
+@functions {
+
+	public class FormHandlerModel : PageModel
+	{
+		private readonly DataContext _context;
+
+		public FormHandlerModel(DataContext context)
+		{
+			_context = context;
+		}
+
+		[BindProperty]
+		public Product Product { get; set; }
+
+		public async Task OnGetAsync(long id = 1)
+		{
+			Product = await _context.Products
+			.Include(p => p.Category)
+			.Include(p => p.Supplier)
+			.FirstAsync(p => p.ProductId == id);
+		}
+
+		public IActionResult OnPost()
+		{
+			TempData["product"] = System.Text.Json.JsonSerializer.Serialize(Product);
+
+			return RedirectToPage("FormResults");
+		}
+	}
+}

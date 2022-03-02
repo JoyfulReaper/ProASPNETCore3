@@ -26,6 +26,33 @@ namespace WebApp.Controllers
                 .FirstAsync(p => p.ProductId == id));
         }
 
+        public async Task<IActionResult> BindingForm(long? id)
+        {
+            ViewBag.Categories
+                = new SelectList(_dbContext.Categories, "CategoryId", "Name");
+
+            return View("BindingForm", await _dbContext.Products
+                .Include(p => p.Category)
+                .Include(p => p.Supplier)
+                .FirstOrDefaultAsync(p => id == null || p.ProductId == id));
+        }
+
+        //[HttpPost]
+        //public IActionResult SubmitBindingForm(string name, decimal price)
+        //{
+        //    TempData["name param"] = name;
+        //    TempData["price param"] = price.ToString();
+
+        //    return RedirectToAction(nameof(Results));
+        //}
+
+        [HttpPost]
+        public IActionResult SubmitBindingForm(Product product)
+        {
+            TempData["product"] = System.Text.Json.JsonSerializer.Serialize(product);
+            return RedirectToAction(nameof(Results));
+        }
+
         [HttpPost]
         public IActionResult SubmitForm()
         {

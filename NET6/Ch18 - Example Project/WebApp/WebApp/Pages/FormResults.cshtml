@@ -18,5 +18,15 @@
 		}
 	</tbody>
 </table>
-<a class="btn btn-primary" asp-page="FormHandler">Return</a>
+<button class="btn btn-primary" id="btnReturn">Return</button>
 </div>
+
+@section Scripts {
+	<script>
+		$(() => {
+			$('#btnReturn').click(() => {
+				window.history.back();
+			});
+		});
+	</script>
+}
