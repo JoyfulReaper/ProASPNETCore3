@@ -71,6 +71,10 @@ builder.Services.Configure<AntiforgeryOptions>(opts =>
     opts.HeaderName = "X-XSRF-TOKEN";
 });
 
+builder.Services.Configure<MvcOptions>(opts =>
+    opts.ModelBindingMessageProvider
+        .SetValueMustNotBeNullAccessor(value => "Please enter a value"));
+
 var app = builder.Build();
 
 app.UseDeveloperExceptionPage();
