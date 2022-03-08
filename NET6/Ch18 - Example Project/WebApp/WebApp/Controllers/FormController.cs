@@ -79,35 +79,35 @@ namespace WebApp.Controllers
         [HttpPost]
         public IActionResult SubmitMVForm(Product product)
         {
-            if(string.IsNullOrEmpty(product.Name))
-            {
-                ModelState.AddModelError(nameof(Product.Name), "Enter a name");
-            }
+            //if(string.IsNullOrEmpty(product.Name))
+            //{
+            //    ModelState.AddModelError(nameof(Product.Name), "Enter a name");
+            //}
 
-            if(ModelState.GetValidationState(nameof(Product.Price))
-                == ModelValidationState.Valid && product.Price < 1)
-            {
-                ModelState.AddModelError(nameof(Product.Price), "Enter a positive price");
-            }
+            //if(ModelState.GetValidationState(nameof(Product.Price))
+            //    == ModelValidationState.Valid && product.Price < 1)
+            //{
+            //    ModelState.AddModelError(nameof(Product.Price), "Enter a positive price");
+            //}
 
-            if(ModelState.GetValidationState(nameof(Product.Name))
-                == ModelValidationState.Valid
-                && ModelState.GetValidationState(nameof(Product.Price))
-                == ModelValidationState.Valid
-                && product.Name.ToLower().StartsWith("small") && product.Price > 100)
-            {
-                ModelState.AddModelError("", "Small products cannot cost more than $100");
-            }
+            //if(ModelState.GetValidationState(nameof(Product.Name))
+            //    == ModelValidationState.Valid
+            //    && ModelState.GetValidationState(nameof(Product.Price))
+            //    == ModelValidationState.Valid
+            //    && product.Name.ToLower().StartsWith("small") && product.Price > 100)
+            //{
+            //    ModelState.AddModelError("", "Small products cannot cost more than $100");
+            //}
 
-            if(!_dbContext.Categories.Any(c => c.CategoryId == product.CategoryId))
-            {
-                ModelState.AddModelError(nameof(Product.CategoryId), "Enter an existing category id");
-            }
+            //if(!_dbContext.Categories.Any(c => c.CategoryId == product.CategoryId))
+            //{
+            //    ModelState.AddModelError(nameof(Product.CategoryId), "Enter an existing category id");
+            //}
 
-            if (!_dbContext.Suppliers.Any(s => s.SupplierId == product.SupplierId))
-            {
-                ModelState.AddModelError(nameof(Product.SupplierId), "Enter an existing supplier id");
-            }
+            //if (!_dbContext.Suppliers.Any(s => s.SupplierId == product.SupplierId))
+            //{
+            //    ModelState.AddModelError(nameof(Product.SupplierId), "Enter an existing supplier id");
+            //}
 
             if (ModelState.IsValid)
             {
