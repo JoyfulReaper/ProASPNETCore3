@@ -30,8 +30,8 @@ namespace WebApp.Controllers
             {
                 Name = p.Name,
                 Price = p.Price,
-                CategoryId = p.CategoryId,
-                SupplierId = p.SupplierId,
+                CategoryId = p.CategoryId.Value,
+                SupplierId = p.SupplierId.Value,
             };
         }
 
