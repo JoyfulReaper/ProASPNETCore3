@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
 using WebApp;
+using WebApp.Filters;
 using WebApp.Models;
 using WebApp.TagHelpers;
 
@@ -52,6 +53,12 @@ builder.Services.Configure<AntiforgeryOptions>(opts =>
 builder.Services.Configure<MvcOptions>(opts =>
     opts.ModelBindingMessageProvider
         .SetValueMustNotBeNullAccessor(value => "Please enter a value"));
+
+builder.Services.AddScoped<GuidResponse2Attribute>();
+builder.Services.Configure<MvcOptions>(opts => {
+    opts.Filters.Add<HttpsOnlyAttribute>();
+    opts.Filters.Add(new MessageAttribute("This is the globally-scoped filter"));
+    });
 
 var app = builder.Build();
 
