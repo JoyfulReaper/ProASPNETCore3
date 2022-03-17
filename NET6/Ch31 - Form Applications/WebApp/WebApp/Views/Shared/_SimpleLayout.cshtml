@@ -1,0 +1,29 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@ViewBag.Title</title>
+    @*<link href="~/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />*@
+    @*<link asp-href-include="/lib/twitter-bootstrap/css/*.min.css" 
+        asp-href-exclude="**/*-reboot*,**/*-grid*" rel="stylesheet"/>*@
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.min.js"
+        asp-fallback-href="/lib/twitter-bootstrap/css/bootstrap.min.css"
+        asp-fallback-test-class="btn"
+        asp-fallback-test-property="display"
+        asp-fallback-test-value="inline-block"
+        rel="stylesheet" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+        asp-fallback-src="/lib/jquery/jquery.min.js"
+        asp-fallback-test="window.jQuery" asp-append-version="true">
+    </script>
+</head>
+<body>
+    <div class="m-2">
+        @RenderBody()
+    </div>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

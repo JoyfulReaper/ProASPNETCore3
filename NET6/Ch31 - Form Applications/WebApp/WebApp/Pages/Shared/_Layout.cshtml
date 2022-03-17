@@ -1,0 +1,22 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <title>@ViewBag.Title</title>
+</head>
+<body>
+    <h5 class="bg-secondary text-white text-center m-2 p-2">Razor Page</h5>
+    <div>
+        @RenderBody()
+    </div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
+    asp-fallback-src="/lib/jquery/jquery.min.js"
+    asp-fallback-test="window.jQuery" asp-append-version="true">
+</script>
+
+@RenderSection("Scripts", required: false)
+</html>
