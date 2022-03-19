@@ -12,11 +12,14 @@
 
 		public void OnGet()
 		{
-			ViewModel = ViewModelFactory.Create(new Product(), Categories, Suppliers);
+			Product p = TempData.ContainsKey("product")
+				? JsonSerializer.Deserialize<Product>(TempData["product"] as string) : new Product();
+			ViewModel = ViewModelFactory.Create(p, Categories, Suppliers);
 		}
 
 		public async Task<IActionResult> OnPostAsync([FromForm]Product product)
 		{
+			await CheckNewCategory(product);
 			if(ModelState.IsValid)
 			{
 				product.ProductId = default;
