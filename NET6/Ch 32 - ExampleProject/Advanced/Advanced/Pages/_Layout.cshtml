@@ -6,10 +6,12 @@
     <title>@ViewBag.Title</title>
     <h5 class="bg-secondary text-white text-center p-2">Razor Pages</h5>
     <link href="/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <base href="~/" />
 </head>
 <body>
     <div class="m-2">
         @RenderBody()
     </div>
+    <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

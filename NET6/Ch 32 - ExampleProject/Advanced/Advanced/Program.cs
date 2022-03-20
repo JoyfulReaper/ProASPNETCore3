@@ -11,6 +11,7 @@ builder.Services.AddDbContext<DataContext>(opts =>
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
 
 var app = builder.Build();
 
@@ -22,6 +23,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllerRoute("controllers", "controllers/{controller=Home}/{action=Index}/{id?}");
     endpoints.MapDefaultControllerRoute();
     endpoints.MapRazorPages();
+    endpoints.MapBlazorHub();
 });
 
 SeedData.SeedDatabase(app.Services.CreateScope().ServiceProvider.GetRequiredService<DataContext>());
