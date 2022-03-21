@@ -1,6 +1,11 @@
 ﻿@page "/pages/blazor"
 
-<script type="text/javascript">
+<h4 class="bg-primary text-white, text-center p-2">Events</h4>
+@*<component type="typeof(Advanced.Blazor.Events)" render-mode="Server" />*@
+@*<component type="typeof(Advanced.Blazor.Bindings)" render-mode="Server" />*@
+<component type="typeof(Advanced.Blazor.Split)" render-mode="Server" />
+
+@*<script type="text/javascript">
 	window.addEventListener("DOMContentLoaded", () => {
 		document.getElementById("markElems").addEventListener("click", () => {
 			document.querySelectorAll("td:first-child")
@@ -16,4 +21,4 @@
 
 <button class="btn btn-primary" id="markElems">Mark Elements</button>
 
-<component type="typeof(Advanced.Blazor.PeopleList)" render-mode="Server" />
+<component type="typeof(Advanced.Blazor.PeopleList)" render-mode="Server" />*@
