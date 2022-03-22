@@ -31,7 +31,7 @@
 </table>
 
 
-<div class="form-group">
+@*<div class="form-group">
 	<label for="selectedCity">City</label>
 	<select name="selectedCity" class="form-control" @bind=SelectedCity>
 		<option disabled selected>Select City</option>
@@ -41,20 +41,42 @@
 		}
 	</select>
 </div>
-<button class="btn btn-primary" type="submit">Select</button>
+<button class="btn btn-primary" type="submit">Select</button>*@
+@*<SelectFilter values="@Cities" title="@SelectTitle" CustomEvent="@HandleCustom" />*@
 
+<SelectFilter Values="@Cities" Title="@SelectTitle" 
+	@bind-SelectedValue="SelectedCity" />
+
+<button class="btn btn-primary"
+	@onclick="@(() => SelectedCity = "San Jose")">
+	Change
+</button>
 
 @code {
 	public IEnumerable<Person> People =>
 			_context.People
 			.Include(p => p.Department)
-			.Include(p => p.Location);
+			.Include(p => p.Location)
+			.Take(ItemCount);
 
 	public IEnumerable<string> Cities =>
-			_context.Locations.Select(l => l.City).Distinct();
+			_context.Locations
+			.Select(l => l.City)
+			.Distinct();
 
 	public string SelectedCity { get; set; }
 
 	public string GetClass(string city) =>
 			SelectedCity == city ? "bg-info text-white" : "";
+
+	[Parameter]
+	public int ItemCount { get; set; } = 4;
+
+	[Parameter]
+	public string SelectTitle { get; set; }
+
+	//public void HandleCustom(string newValue)
+	//{
+	//	SelectedCity = newValue;
+	//}
 }
