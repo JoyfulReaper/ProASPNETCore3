@@ -1,6 +1,6 @@
 ﻿@inject DataContext _context
 
-<table class="table table-sm table-bordered table-striped">
+@*<table class="table table-sm table-bordered table-striped">
 	<thead>
 		<tr>
 			<th>ID</th>
@@ -28,7 +28,43 @@
 			</tr>
 		}
 	</tbody>
-</table>
+</table>*@
+
+<TableTemplate RowType="Person" RowData="People"
+	Highlight="@(p => p.Location.City)" SortDirection="@(p => p.LastName)">
+	<Header>
+		<tr>
+			<th>ID</th>
+			<th>Name</th>
+			<th>Dept</th>
+			<th>Location</th>
+		</tr>
+	</Header>
+	<RowTemplate Context="p">
+				<td>
+					@p.PersonId
+				</td>
+				<td>
+					@p.LastName, @p.FirstName
+				</td>
+				<td>
+					@p.Department.Name
+				</td>
+				<td>
+					@p.Location.City, @p.Location.State
+				</td>
+	</RowTemplate>
+</TableTemplate>
+
+<ThemeWrapper Theme="info" Title="Location Selector">
+	<SelectFilter Values="@Cities" Title="@SelectTitle" 
+	@bind-SelectedValue="SelectedCity" />
+
+<button class="btn btn-primary"
+	@onclick="@(() => SelectedCity = "San Jose")">
+	Change
+</button>
+</ThemeWrapper>
 
 
 @*<div class="form-group">
@@ -44,20 +80,14 @@
 <button class="btn btn-primary" type="submit">Select</button>*@
 @*<SelectFilter values="@Cities" title="@SelectTitle" CustomEvent="@HandleCustom" />*@
 
-<SelectFilter Values="@Cities" Title="@SelectTitle" 
-	@bind-SelectedValue="SelectedCity" />
 
-<button class="btn btn-primary"
-	@onclick="@(() => SelectedCity = "San Jose")">
-	Change
-</button>
 
 @code {
 	public IEnumerable<Person> People =>
-			_context.People
-			.Include(p => p.Department)
-			.Include(p => p.Location)
-			.Take(ItemCount);
+				_context.People
+				.Include(p => p.Department)
+				.Include(p => p.Location);
+	//.Take(ItemCount);
 
 	public IEnumerable<string> Cities =>
 			_context.Locations
