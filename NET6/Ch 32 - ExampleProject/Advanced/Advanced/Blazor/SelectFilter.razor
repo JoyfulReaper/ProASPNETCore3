@@ -1,4 +1,4 @@
-﻿<div class="form-group">
+﻿<div class="form-group p-2 bg-@Theme @TextColor()">
 	<label for="select-@Title">@Title</label>
 @*	<select name="select-@Title" class="form-control"
 		@bind="SelectedValue" @attributes="Attrs">*@
@@ -29,6 +29,11 @@
 
 	[Parameter]
 	public EventCallback<string> SelectedValueChanged { get; set; }
+
+	[CascadingParameter(Name = "BgTheme")]
+	public string Theme { get; set; }
+
+	public string TextColor() => Theme == null ? "" : "text-white";
 
 	public async Task HandleSelect(ChangeEventArgs e)
 	{
