@@ -1,4 +1,8 @@
-﻿<CascadingValue Name="BgTheme" Value="Theme" IsFixed="false">
+﻿@page "/departments"
+@page "/depts"
+@inject NavigationManager _nav
+
+<CascadingValue Name="BgTheme" Value="Theme" IsFixed="false">
 	<TableTemplate RowType="Department" RowData="Departments"
 				   Highlight="@(d => d.Name)"
 				   SortDirection="@(d => d.Name)">
@@ -21,6 +25,7 @@
 
 <SelectFilter Title="@("Theme")" Values="Themes" @bind-SelectedValue="Theme" />
 
+<button class="btn btn-primary" @onclick="HandleClick">People</button>
 @code {
 	[Inject]
 	public DataContext Context { get; set; }
@@ -31,4 +36,6 @@
 
 	public string Theme { get; set; } = "info";
 	public string[] Themes = new string[] { "primary", "info", "success" };
+
+	private void HandleClick() => _nav.NavigateTo("/people");
 }

@@ -24,6 +24,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapDefaultControllerRoute();
     endpoints.MapRazorPages();
     endpoints.MapBlazorHub();
+    endpoints.MapFallbackToPage("/_Host");
 });
 
 SeedData.SeedDatabase(app.Services.CreateScope().ServiceProvider.GetRequiredService<DataContext>());
