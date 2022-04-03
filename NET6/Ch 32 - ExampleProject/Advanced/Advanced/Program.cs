@@ -1,5 +1,6 @@
 using Advanced.Models;
 using Microsoft.EntityFrameworkCore;
+using Advanced.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<DataContext>(opts =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddSingleton<ToggleService>();
 
 var app = builder.Build();
 
