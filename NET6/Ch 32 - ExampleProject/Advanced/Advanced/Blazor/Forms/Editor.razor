@@ -1,0 +1,75 @@
+﻿@page "/forms/edit/{id:long}"
+@layout EmptyLayout
+
+<link href="/blazorValidation.css" rel="stylesheet" />
+<h4 class="bg-primary text-center text-white p-2">Edit</h4>
+
+<FormSpy PersonData="PersonData">
+	<EditForm Model="PersonData">
+		<DataAnnotationsValidator />
+		<ValidationSummary />
+		<div class="form-group">
+			<label>Person ID</label>
+			<InputNumber class="form-control" @bind-Value="PersonData.PersonId" disabled />
+		</div>
+		<div class="form-group">
+			<label>FirstName</label>
+			<ValidationMessage For="@(() => PersonData.FirstName)" />
+			<InputText class="form-control" @bind-Value="PersonData.FirstName" />
+		</div>
+		<div class="form-group">
+			<label>LastName</label>
+			<ValidationMessage For="@(() => PersonData.LastName)" />
+			<InputText class="form-control" @bind-Value="PersonData.LastName" />
+		</div>
+		<div class="form-group">
+			<label>Department Id</label>
+			<ValidationMessage For="@(() => PersonData.DepartmentId)" />
+			<CustomSelect TValue="long" Values="Departments"
+				Parser="@(str => long.Parse(str))"
+				@bind-Value="PersonData.DepartmentId">
+				<option selected disabled value="0">Choose a Department</option>
+			</CustomSelect>
+		</div>
+		<div class="form-group">
+			<label>Location Id</label>
+			<ValidationMessage For="@(() => PersonData.LocationId)" />
+			<CustomSelect TValue="long" Values="Locations"
+				Parser="@(str => long.Parse(str))"
+				@bind-Value="PersonData.DepartmentId">
+				<option selected disabled value="0">Choose a Location</option>
+			</CustomSelect>
+		</div>
+		<div class="text-center">
+			<NavLink class="btn btn-secondary" href="/forms">Back</NavLink>
+		</div>
+	</EditForm>
+</FormSpy>
+
+@code {
+	[Inject]
+	public NavigationManager NavManager { get; set; }
+
+	[Inject]
+	public DataContext Context { get; set; }
+
+	[Parameter]
+	public long Id { get; set; }
+
+	public Person PersonData { get; set; } = new Person();
+
+	public IDictionary<string, long> Departments { get; set; }
+		= new Dictionary<string, long>();
+
+	public IDictionary<string, long> Locations { get; set; }
+		= new Dictionary<string, long>();
+
+	protected async override Task OnParametersSetAsync()
+	{
+		PersonData = await Context.People.FindAsync(Id);
+		Departments = await Context.Departments
+			.ToDictionaryAsync(d => d.Name, d => d.DepartmentId);
+		Locations = await Context.Locations
+			.ToDictionaryAsync(l => $"{l.City}, {l.State}", l => l.LocationId);
+	}
+}

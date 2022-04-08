@@ -1,0 +1,29 @@
+﻿<div class="container-fluid no-gutters">
+	<div class="row">
+		<div class="col">
+			@ChildContent
+		</div>
+		<div class="col">
+			<table class="table table-sm table-striped table-bordered">
+				<thead>
+					<tr><th colspan="2" class="text-center">Data Summary</th></tr>
+				</thead>
+				<tbody>
+					<tr><th>Id</th><td>@PersonData?.PersonId</td></tr>
+					<tr><th>FirstName</th><td>@PersonData?.FirstName</td></tr>
+					<tr><th>LastName</th><td>@PersonData?.LastName</td></tr>
+					<tr><th>Dept Id</th><td>@PersonData?.DepartmentId</td></tr>
+					<tr><th>Location Id</th><td>@PersonData?.LocationId</td></tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+@code {
+	[Parameter]
+	public RenderFragment ChildContent { get; set; }
+
+	[Parameter]
+	public Person PersonData { get; set; }
+}
