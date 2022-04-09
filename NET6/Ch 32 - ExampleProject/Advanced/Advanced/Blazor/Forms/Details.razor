@@ -1,0 +1,49 @@
+﻿@page "/forms/details/{id:long}"
+@layout EmptyLayout
+@inherits OwningComponentBase<DataContext>
+
+<h4 class="bg-info text-center text-white p-2">Details</h4>
+
+<div class="form-group">
+	<label>Id</label>
+	<input class="form-control" value="@PersonData.PersonId" disabled />
+</div>
+<div class="form-group">
+	<label>First Name</label>
+	<input class="form-control" value="@PersonData.FirstName" disabled />
+</div>
+<div class="form-group">
+	<label>Last Name</label>
+	<input class="form-control" value="@PersonData.LastName" disabled />
+</div>
+<div class="form-group">
+	<label>Department</label>
+	<input class="form-control" value="@PersonData.Department?.Name" disabled />
+</div>
+<div class="form-group">
+	<label>Location</label>
+	<input class="form-control" value="@($"{PersonData.Location?.City}, {PersonData.Location?.State}")" disabled />
+</div>
+<div class="text-center">
+	<NavLink class="btn btn-info" href="@($"forms/edit/{PersonData.PersonId}")">
+		Edit
+	</NavLink>
+	<NavLink class="btn btn-info" href="@($"forms")">
+		Back
+	</NavLink>
+</div>
+
+@code {
+	public Person PersonData { get; set; } = new Person();
+
+	DataContext Context => Service;
+
+	[Parameter]
+	public long Id { get; set; }
+
+	protected async override Task OnParametersSetAsync()
+	{
+		PersonData = await Context.People.Include(p => p.Department)
+			.Include(p => p.Location).FirstOrDefaultAsync(p => p.PersonId == Id);
+	}
+}

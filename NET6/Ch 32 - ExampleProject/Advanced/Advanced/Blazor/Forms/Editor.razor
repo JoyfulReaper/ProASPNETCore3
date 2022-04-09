@@ -1,4 +1,5 @@
 ﻿@page "/forms/edit/{id:long}"
+@page "/forms/create"
 @layout EmptyLayout
 @*@implements IDisposable*@
 @*@inherits OwningComponentBase*@
@@ -6,7 +7,7 @@
 @*@using Microsoft.Extensions.DependencyInjection*@
 
 <link href="/blazorValidation.css" rel="stylesheet" />
-<h4 class="bg-primary text-center text-white p-2">Edit</h4>
+<h4 class="bg-primary text-center text-white p-2">@Mode</h4>
 <h6 class="bg-info text-center text-white p-2">@FormSubmitMessage</h6>
 
 <FormSpy PersonData="PersonData">
@@ -14,6 +15,15 @@
 		OnInvalidSubmit="HandleInvalidSubmit">
 		<DataAnnotationsValidator />
 		<ValidationSummary />
+		@if(Mode == "Edit")
+		{
+			<div class="form-group">
+				<lable>ID</lable>
+				<InputNumber class="form-control"
+					@bind-Value="PersonData.PersonId" readonly />
+			</div>
+		}
+
 		<div class="form-group">
 			<label>Person ID</label>
 			<InputNumber class="form-control" @bind-Value="PersonData.PersonId" disabled />
@@ -29,7 +39,7 @@
 			<InputText class="form-control" @bind-Value="PersonData.LastName" />
 		</div>
 		<div class="form-group">
-			<label>Department Id</label>
+			<label>Department</label>
 			<ValidationMessage For="@(() => PersonData.DepartmentId)" />
 			<CustomSelect TValue="long" Values="Departments"
 				Parser="@(str => long.Parse(str))"
@@ -38,16 +48,16 @@
 			</CustomSelect>
 		</div>
 		<div class="form-group">
-			<label>Location Id</label>
+			<label>Location</label>
 			<ValidationMessage For="@(() => PersonData.LocationId)" />
 			<CustomSelect TValue="long" Values="Locations"
 				Parser="@(str => long.Parse(str))"
-				@bind-Value="PersonData.DepartmentId">
+				@bind-Value="PersonData.LocationId">
 				<option selected disabled value="0">Choose a Location</option>
 			</CustomSelect>
 		</div>
 		<div class="text-center">
-			<button type="submit" class="btn btn-primary">Submit</button>
+			<button type="submit" class="btn btn-@Theme">Save</button>
 			<NavLink class="btn btn-secondary" href="/forms">Back</NavLink>
 		</div>
 	</EditForm>
@@ -74,17 +84,33 @@
 
 	public string FormSubmitMessage { get; set; } = "Form Data Not Submitted";
 
-	public void HandleValidSubmit() => FormSubmitMessage = "Valid Data Submitted";
+	public async Task HandleValidSubmit()
+	{
+		if(Mode == "Create")
+		{
+			Context.Add(PersonData);
+		}
+		await Context.SaveChangesAsync();
+		NavManager.NavigateTo("forms");
+	}
+
 	public void HandleInvalidSubmit() => FormSubmitMessage = "Invalid Data Submitted";
 
 	protected async override Task OnParametersSetAsync()
 	{
-		PersonData = await Context.People.FindAsync(Id);
+		if(Mode == "Edit")
+		{
+			PersonData = await Context.People.FindAsync(Id);
+		}
+
 		Departments = await Context.Departments
 			.ToDictionaryAsync(d => d.Name, d => d.DepartmentId);
 		Locations = await Context.Locations
 			.ToDictionaryAsync(l => $"{l.City}, {l.State}", l => l.LocationId);
 	}
+
+	public string Theme => Id == 0 ? "primary" : "warning";
+	public string Mode => Id == 0 ? "Create" : "Edit";
 
 	//public void Dispose() => Context.Entry(PersonData).State = EntityState.Detached;
 }
