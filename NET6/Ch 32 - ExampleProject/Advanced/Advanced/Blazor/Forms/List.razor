@@ -62,8 +62,8 @@
 <span class="h5">Counter: @Counter</span>
 
 @code {
-	[Inject]
-	public DataContext Context { get; set; }
+	//[Inject]
+	public DataContext Context => Service;
 
 	public IEnumerable<Person> People { get; set; } = Enumerable.Empty<Person>();
 
