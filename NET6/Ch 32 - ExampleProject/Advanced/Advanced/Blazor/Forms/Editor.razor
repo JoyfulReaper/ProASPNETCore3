@@ -14,6 +14,7 @@
 	<EditForm Model="PersonData" OnValidSubmit="HandleValidSubmit"
 		OnInvalidSubmit="HandleInvalidSubmit">
 		<DataAnnotationsValidator />
+		<DeptStateValidator DepartmentId="2" State="CA" />
 		<ValidationSummary />
 		@if(Mode == "Edit")
 		{
@@ -57,7 +58,8 @@
 			</CustomSelect>
 		</div>
 		<div class="text-center">
-			<button type="submit" class="btn btn-@Theme">Save</button>
+			@*<button type="submit" class="btn btn-@Theme">Save</button>*@
+			<ValidButton type="submit" BtnTheme="@Theme">Save</ValidButton>
 			<NavLink class="btn btn-secondary" href="/forms">Back</NavLink>
 		</div>
 	</EditForm>
