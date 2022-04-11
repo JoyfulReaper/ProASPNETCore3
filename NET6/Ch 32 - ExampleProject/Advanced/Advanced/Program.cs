@@ -1,6 +1,7 @@
 using Advanced.Models;
 using Microsoft.EntityFrameworkCore;
 using Advanced.Services;
+using Microsoft.AspNetCore.ResponseCompression;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +16,18 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<ToggleService>();
 
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
+
 var app = builder.Build();
 
+app.UseBlazorFrameworkFiles("/webassembly");
+
 app.UseStaticFiles();
+//app.UseStaticFiles("/webassembly");
 app.UseRouting();
 
 app.UseEndpoints(endpoints =>
@@ -26,7 +36,9 @@ app.UseEndpoints(endpoints =>
     endpoints.MapDefaultControllerRoute();
     endpoints.MapRazorPages();
     endpoints.MapBlazorHub();
-    endpoints.MapFallbackToPage("/_Host");
+
+    endpoints.MapFallbackToFile("/webassembly/{*path:nonfile}","index.html");
+    endpoints.MapFallbackToPage("/_Host"); 
 });
 
 SeedData.SeedDatabase(app.Services.CreateScope().ServiceProvider.GetRequiredService<DataContext>());
