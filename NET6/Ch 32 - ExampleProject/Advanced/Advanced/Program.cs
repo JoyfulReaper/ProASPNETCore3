@@ -25,9 +25,9 @@ builder.Services.AddResponseCompression(opts =>
 var app = builder.Build();
 
 app.UseBlazorFrameworkFiles("/webassembly");
+app.MapFallbackToFile("/webassembly/{*path:nonfile}", "/webassembly/index.html");
 
 app.UseStaticFiles();
-//app.UseStaticFiles("/webassembly");
 app.UseRouting();
 
 app.UseEndpoints(endpoints =>
@@ -37,7 +37,6 @@ app.UseEndpoints(endpoints =>
     endpoints.MapRazorPages();
     endpoints.MapBlazorHub();
 
-    endpoints.MapFallbackToFile("/webassembly/{*path:nonfile}","index.html");
     endpoints.MapFallbackToPage("/_Host"); 
 });
 
