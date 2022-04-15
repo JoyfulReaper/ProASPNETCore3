@@ -1,0 +1,108 @@
+﻿@page "/forms/edit/{id:long}"
+@page "/forms/create"
+
+<link href="/blazorValidation.css" rel="stylesheet" />
+<h4 class="bg-primary text-center text-white p-2">@Mode (WebAssembly)</h4>
+
+
+<EditForm Model="PersonData" OnValidSubmit="HandleValidSubmit">
+	<DataAnnotationsValidator />
+	<DeptStateValidator DepartmentId="2" State="CA" />
+	<ValidationSummary />
+	@if (Mode == "Edit")
+	{
+		<div class="form-group">
+			<lable>ID</lable>
+			<InputNumber class="form-control"
+					 @bind-Value="PersonData.PersonId" readonly />
+		</div>
+	}
+
+	<div class="form-group">
+		<label>Person ID</label>
+		<InputNumber class="form-control" @bind-Value="PersonData.PersonId" disabled />
+	</div>
+	<div class="form-group">
+		<label>FirstName</label>
+		<ValidationMessage For="@(() => PersonData.FirstName)" />
+		<InputText class="form-control" @bind-Value="PersonData.FirstName" />
+	</div>
+	<div class="form-group">
+		<label>LastName</label>
+		<ValidationMessage For="@(() => PersonData.LastName)" />
+		<InputText class="form-control" @bind-Value="PersonData.LastName" />
+	</div>
+	<div class="form-group">
+		<label>Department</label>
+		<ValidationMessage For="@(() => PersonData.DepartmentId)" />
+		<select @bind="PersonData.DepartmentId" class="form-control">
+			<option selected disabled value="0">Choose a Department</option>
+			@foreach (var kvp in Departments)
+			{
+				<option value="@kvp.Value">@kvp.Key</option>
+			}
+		</select>
+	</div>
+	<div class="form-group">
+		<label>Location</label>
+		<ValidationMessage For="@(() => PersonData.LocationId)" />
+		<select @bind="PersonData.LocationId" class="form-control">
+			<option selected disabled value="0">Choose a Location</option>
+			@foreach (var kvp in Locations)
+			{
+				<option value="@kvp.Value">@kvp.Key</option>
+			}
+		</select>
+	</div>
+	<div class="text-center">
+		<button type="submit" class="btn btn-@Theme">Save</button>
+		<NavLink class="btn btn-secondary" href="/forms">Back</NavLink>
+	</div>
+</EditForm>
+@code {
+	[Inject]
+	private HttpClient Http { get; set; }
+
+	[Inject]
+	private NavigationManager NavManager { get; set; }
+
+	[Parameter]
+	public long Id { get; set; }
+
+	public Person PersonData { get; set; } = new();
+
+	private IDictionary<string, long> Departments { get; set; } = new Dictionary<string, long>();
+	private IDictionary<string, long> Locations { get; set; } = new Dictionary<string, long>();
+
+	protected override async Task OnParametersSetAsync()
+	{
+		if (Mode == "Edit")
+		{
+			PersonData = await Http.GetFromJsonAsync<Person>($"/api/people/{Id}");
+		}
+		Departments = (await Http.GetFromJsonAsync<Department[]>("/api/departments"))
+			.ToDictionary(d => d.Name, d => d.DepartmentId);
+
+		Locations = (await Http.GetFromJsonAsync<Location[]>("/api/locations"))
+			.ToDictionary(l => $"{l.City}, {l.State}", d => d.LocationId);
+	}
+
+	public string Theme => Id == 0 ? "primary" : "warning";
+	public string Mode => Id == 0 ? "Create" : "Edit";
+
+	public async Task HandleValidSubmit()
+	{
+		if (Http != null)
+		{
+			if (Mode == "Create")
+			{
+				await Http.PostAsJsonAsync("/api/people", PersonData);
+			}
+			else
+			{
+				await Http.PutAsJsonAsync("/api/people", PersonData);
+			}
+		}
+		NavManager?.NavigateTo("forms");
+	}
+}

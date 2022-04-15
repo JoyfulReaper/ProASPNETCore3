@@ -1,12 +1,18 @@
-﻿namespace Advanced.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Advanced.Models
 {
     public class Location
     {
         public long LocationId { get; set; }
-        public string City { get; set; }
-        public string State { get; set; }
+
+        [Required]
+        public string? City { get; set; }
+
+        [Required]
+        public string? State { get; set; }
 
 
-        public IEnumerable<Person> People { get; set; }
+        public IEnumerable<Person>? People { get; set; } = new HashSet<Person>();
     }
 }
