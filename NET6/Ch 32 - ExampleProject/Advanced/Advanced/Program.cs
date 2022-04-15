@@ -2,6 +2,7 @@ using Advanced.Models;
 using Microsoft.EntityFrameworkCore;
 using Advanced.Services;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,22 @@ builder.Services.AddResponseCompression(opts =>
 {
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
         new[] { "application/octet-stream" });
+});
+
+builder.Services.AddDbContext<IdentityContext>(opts =>
+{
+    opts.UseSqlServer(builder.Configuration["ConnectionStrings:IdentityConnection"]);
+});
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<IdentityContext>();
+
+builder.Services.Configure<IdentityOptions>(opts =>
+{
+    opts.Password.RequiredLength = 3;
+    opts.Password.RequireNonAlphanumeric = false;
+    opts.Password.RequireLowercase = false;
+    opts.Password.RequireUppercase = false;
+    opts.Password.RequireDigit = false;
 });
 
 var app = builder.Build();
