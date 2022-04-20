@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Advanced.Services;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,13 @@ builder.Services.Configure<IdentityOptions>(opts =>
     opts.Password.RequireDigit = false;
 });
 
+//builder.Services.Configure<CookieAuthenticationOptions>(
+//    IdentityConstants.ApplicationScheme, opts =>
+//    {
+//        opts.LoginPath = "/Authenticate";
+//        opts.AccessDeniedPath = "/NotAllowed";
+//    });
+
 var app = builder.Build();
 
 app.UseBlazorFrameworkFiles("/webassembly");
@@ -46,6 +54,9 @@ app.MapFallbackToFile("/webassembly/{*path:nonfile}", "/webassembly/index.html")
 
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
@@ -58,5 +69,6 @@ app.UseEndpoints(endpoints =>
 });
 
 SeedData.SeedDatabase(app.Services.CreateScope().ServiceProvider.GetRequiredService<DataContext>());
+IdentitySeedData.CreateAdminAccount(app.Services, app.Configuration);
 
 app.Run();
