@@ -40,6 +40,18 @@ builder.Services.Configure<IdentityOptions>(opts =>
     opts.Password.RequireDigit = false;
 });
 
+builder.Services.AddAuthentication(opts =>
+{
+    opts.DefaultScheme =
+        CookieAuthenticationDefaults.AuthenticationScheme;
+    opts.DefaultChallengeScheme =
+        CookieAuthenticationDefaults.AuthenticationScheme;
+}).AddCookie(opts =>
+{
+    opts.Events.DisableRedirectionForPath(e => e.OnRedirectToLogin, "/api", StatusCodes.Status401Unauthorized);
+    opts.Events.DisableRedirectionForPath(e => e.OnRedirectToAccessDenied, "/api", StatusCodes.Status403Forbidden);
+});
+
 //builder.Services.Configure<CookieAuthenticationOptions>(
 //    IdentityConstants.ApplicationScheme, opts =>
 //    {
